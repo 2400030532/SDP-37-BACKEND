@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: sdp-37-backend-1
+    runtime: docker
+    plan: free
+    autoDeployTrigger: commit
+    healthCheckPath: /api/v1/status/health
+    envVars:
+      - key: APP_JWT_SECRET
+        generateValue: true
