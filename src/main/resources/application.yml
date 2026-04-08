@@ -14,9 +14,9 @@ spring:
 
   # Datasource Configuration (MySQL)
   datasource:
-    url: jdbc:mysql://localhost:3306/easyintern?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: easyintern
-    password: easyintern123
+    url: ${SPRING_DATASOURCE_URL:jdbc:mysql://localhost:3306/easyintern?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true}
+    username: ${SPRING_DATASOURCE_USERNAME:easyintern}
+    password: ${SPRING_DATASOURCE_PASSWORD:easyintern123}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   # Security
@@ -38,14 +38,14 @@ spring:
             enable: true
 
 server:
-  port: 8080
+  port: ${PORT:8080}
   error:
     include-message: always
 
 app:
   jwt:
-    secret: SGVsbG9FYXN5SW50ZXJuSldUU2VjcmV0S2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTA=
-    expiration-ms: 86400000
+    secret: ${APP_JWT_SECRET:SGVsbG9FYXN5SW50ZXJuSldUU2VjcmV0S2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTA=}
+    expiration-ms: ${APP_JWT_EXPIRATION_MS:86400000}
 
 # Logging
 logging:
