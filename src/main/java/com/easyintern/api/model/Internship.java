@@ -121,13 +121,13 @@ private List<String> skills;
         this.deadline = deadline;
     }
 
-    public String getSkills() {
-    return skills;
-}
+    public List<String> getSkills() {
+        return skills;
+    }
 
-public void setSkills(String skills) {
-    this.skills = skills;
-}
+    public void setSkills(List<String> skills) {
+        this.skills = skills;
+    }
 
     public Boolean getActive() {
         return active;

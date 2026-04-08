@@ -29,6 +29,9 @@ public class User {
     @Column(nullable = true)
     private String location;
 
+    @Column(name = "resume_url")
+    private String resumeUrl;
+
     @Column(nullable = false)
     private String role;
 
@@ -107,6 +110,14 @@ public class User {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getResumeUrl() {
+        return resumeUrl;
+    }
+
+    public void setResumeUrl(String resumeUrl) {
+        this.resumeUrl = resumeUrl;
     }
 
     public String getRole() {

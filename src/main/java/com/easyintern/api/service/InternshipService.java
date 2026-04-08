@@ -2,6 +2,7 @@ package com.easyintern.api.service;
 
 import com.easyintern.api.model.Internship;
 import com.easyintern.api.repository.InternshipRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
@@ -23,15 +24,15 @@ public class InternshipService {
         return internshipRepository.findAllActiveInternships();
     }
 
-    public Optional<Internship> getInternshipById(Long id) {
+    public Optional<Internship> getInternshipById(@NonNull Long id) {
         return internshipRepository.findById(id);
     }
 
-    public Internship createInternship(Internship internship) {
+    public Internship createInternship(@NonNull Internship internship) {
         return internshipRepository.save(internship);
     }
 
-    public Internship updateInternship(Long id, Internship internship) {
+    public Internship updateInternship(@NonNull Long id, @NonNull Internship internship) {
         return internshipRepository.findById(id)
                 .map(existing -> {
                     existing.setTitle(internship.getTitle());
@@ -48,7 +49,7 @@ public class InternshipService {
                 .orElseThrow(() -> new RuntimeException("Internship not found with id: " + id));
     }
 
-    public void deleteInternship(Long id) {
+    public void deleteInternship(@NonNull Long id) {
         internshipRepository.deleteById(id);
     }
 

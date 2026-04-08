@@ -1,7 +1,7 @@
 spring:
   application:
     name: easyintern-api
-  
+
   # JPA/Hibernate Configuration
   jpa:
     hibernate:
@@ -10,28 +10,47 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
-        format_sql: true
-  
+        "[format_sql]": true
+
   # Datasource Configuration (MySQL)
   datasource:
     url: jdbc:mysql://localhost:3306/easyintern?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: easyintern
     password: easyintern123
     driver-class-name: com.mysql.cj.jdbc.Driver
-  
+
   # Security
   security:
     user:
       name: admin
       password: admin
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:}
+    password: ${MAIL_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 server:
   port: 8080
+  error:
+    include-message: always
+
+app:
+  jwt:
+    secret: SGVsbG9FYXN5SW50ZXJuSldUU2VjcmV0S2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTA=
+    expiration-ms: 86400000
 
 # Logging
 logging:
   level:
     root: INFO
-    com.easyintern: DEBUG
+    "[com.easyintern]": DEBUG
   pattern:
     console: "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n"
