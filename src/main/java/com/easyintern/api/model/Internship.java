@@ -37,8 +37,8 @@ public class Internship {
     @Column(name = "deadline")
     private LocalDateTime deadline;
 
-    @ElementCollection
-private List<String> skills;
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> skills;
 
     private Boolean active;
 
