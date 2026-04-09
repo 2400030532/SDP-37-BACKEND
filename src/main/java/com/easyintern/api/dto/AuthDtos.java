@@ -252,5 +252,101 @@ public class AuthDtos {
             this.location = location;
         }
     }
+
+    public static class EmployerUpdateRequest {
+        private String fullName;
+        private String phone;
+        private String email;
+        private String password;
+        private String location;
+
+        public String getFullName() {
+            return fullName;
+        }
+
+        public void setFullName(String fullName) {
+            this.fullName = fullName;
+        }
+
+        public String getPhone() {
+            return phone;
+        }
+
+        public void setPhone(String phone) {
+            this.phone = phone;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public void setEmail(String email) {
+            this.email = email;
+        }
+
+        public String getPassword() {
+            return password;
+        }
+
+        public void setPassword(String password) {
+            this.password = password;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public void setLocation(String location) {
+            this.location = location;
+        }
+    }
+
+    public static class EmployerAdminResponse {
+        private Long id;
+        private Long userId;
+        private String fullName;
+        private String phone;
+        private String email;
+        private String location;
+        private String createdAt;
+
+        public EmployerAdminResponse(Long id, Long userId, String fullName, String phone, String email, String location, String createdAt) {
+            this.id = id;
+            this.userId = userId;
+            this.fullName = fullName;
+            this.phone = phone;
+            this.email = email;
+            this.location = location;
+            this.createdAt = createdAt;
+        }
+
+        public Long getId() {
+            return id;
+        }
+
+        public Long getUserId() {
+            return userId;
+        }
+
+        public String getFullName() {
+            return fullName;
+        }
+
+        public String getPhone() {
+            return phone;
+        }
+
+        public String getEmail() {
+            return email;
+        }
+
+        public String getLocation() {
+            return location;
+        }
+
+        public String getCreatedAt() {
+            return createdAt;
+        }
+    }
 }
 

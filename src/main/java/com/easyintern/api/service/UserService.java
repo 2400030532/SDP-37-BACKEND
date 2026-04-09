@@ -1,15 +1,21 @@
 package com.easyintern.api.service;
 
 import com.easyintern.api.dto.AuthDtos.AuthRequest;
+import com.easyintern.api.dto.AuthDtos.EmployerAdminResponse;
+import com.easyintern.api.dto.AuthDtos.EmployerUpdateRequest;
+import com.easyintern.api.model.Employer;
 import com.easyintern.api.model.User;
+import com.easyintern.api.repository.EmployerRepository;
 import com.easyintern.api.repository.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import org.springframework.http.HttpStatus;
+import java.util.List;
 
 @Service
 public class UserService {
@@ -19,10 +25,12 @@ public class UserService {
     private static final String DEFAULT_ADMIN_PASSWORD = "admin@123A";
 
     private final UserRepository userRepository;
+    private final EmployerRepository employerRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, EmployerRepository employerRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.employerRepository = employerRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -59,6 +67,7 @@ public class UserService {
         }
     }
 
+    @Transactional
     public User createEmployerByAdmin(String fullName, String phone, String email, String password, String location) {
         if (email == null || email.isBlank()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email is required");
@@ -85,10 +94,76 @@ public class UserService {
         employer.setPen(null);
 
         try {
-            return userRepository.save(employer);
+            User savedEmployer = userRepository.save(employer);
+
+            Employer employerProfile = new Employer();
+            employerProfile.setUser(savedEmployer);
+            employerProfile.setFullName(savedEmployer.getFullName());
+            employerProfile.setPhone(savedEmployer.getPhone());
+            employerProfile.setEmail(savedEmployer.getEmail());
+            employerProfile.setLocation(savedEmployer.getLocation());
+            employerRepository.save(employerProfile);
+
+            return savedEmployer;
         } catch (DataIntegrityViolationException ex) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already registered");
         }
+    }
+
+    @Transactional(readOnly = true)
+    public List<EmployerAdminResponse> getEmployersByAdmin() {
+        return employerRepository.findAllByOrderByCreatedAtDesc().stream()
+                .map(this::toEmployerAdminResponse)
+                .toList();
+    }
+
+    @Transactional
+    public EmployerAdminResponse updateEmployerByAdmin(Long employerId, EmployerUpdateRequest request) {
+        Employer employer = employerRepository.findById(employerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employer not found"));
+
+        User user = employer.getUser();
+
+        String nextEmail = request.getEmail() == null || request.getEmail().isBlank()
+                ? employer.getEmail()
+                : normalizeEmail(request.getEmail());
+
+        if (!nextEmail.equalsIgnoreCase(employer.getEmail()) && userRepository.existsByEmail(nextEmail)) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email is already registered");
+        }
+
+        String nextFullName = request.getFullName() == null ? employer.getFullName() : request.getFullName().trim();
+        String nextPhone = request.getPhone() == null ? employer.getPhone() : request.getPhone().trim();
+        String nextLocation = request.getLocation() == null ? employer.getLocation() : request.getLocation().trim();
+
+        employer.setFullName(nextFullName);
+        employer.setPhone(nextPhone);
+        employer.setEmail(nextEmail);
+        employer.setLocation(nextLocation);
+
+        user.setFullName(nextFullName);
+        user.setPhone(nextPhone);
+        user.setEmail(nextEmail);
+        user.setLocation(nextLocation);
+
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
+        employerRepository.save(employer);
+        userRepository.save(user);
+
+        return toEmployerAdminResponse(employer);
+    }
+
+    @Transactional
+    public void deleteEmployerByAdmin(Long employerId) {
+        Employer employer = employerRepository.findById(employerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Employer not found"));
+
+        User user = employer.getUser();
+        employerRepository.delete(employer);
+        userRepository.delete(user);
     }
 
     public User authenticate(String email, String password, String role) {
@@ -215,6 +290,18 @@ public class UserService {
         // TODO: Implement email sending
         // For now, just log that we would send an email
         System.out.println("Login notification: Email would be sent to " + email + " at " + java.time.LocalDateTime.now());
+    }
+
+    private EmployerAdminResponse toEmployerAdminResponse(Employer employer) {
+        return new EmployerAdminResponse(
+                employer.getId(),
+                employer.getUser().getId(),
+                employer.getFullName(),
+                employer.getPhone(),
+                employer.getEmail(),
+                employer.getLocation(),
+                employer.getCreatedAt() == null ? null : employer.getCreatedAt().toString()
+        );
     }
 
     private String normalizeEmail(String email) {

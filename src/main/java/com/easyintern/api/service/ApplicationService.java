@@ -61,7 +61,7 @@ public class ApplicationService {
         addTask(saved.getId(), "Prepare for technical round", null);
         addTask(saved.getId(), "Attend HR discussion", null);
 
-        return saved;
+        return loadApplicationWithDetails(saved.getId());
     }
 
     public List<InternshipApplication> getByStudent(Long userId) {
@@ -69,7 +69,7 @@ public class ApplicationService {
     }
 
     public List<InternshipApplication> getAll() {
-        return applicationRepository.findAll();
+        return applicationRepository.findAllWithDetails();
     }
 
     @Transactional
@@ -119,7 +119,7 @@ public class ApplicationService {
             app.setStatus(ApplicationStatus.APPLIED);
         }
 
-        return applicationRepository.save(app);
+        return loadApplicationWithDetails(app.getId());
     }
 
     @Transactional
@@ -155,7 +155,7 @@ public class ApplicationService {
                 resumeRoundDecision.name()
         );
 
-        return applicationRepository.save(app);
+        return loadApplicationWithDetails(app.getId());
     }
 
     @Transactional
@@ -199,10 +199,15 @@ public class ApplicationService {
         app.setResumeUrl(resumeUrl);
         app.getStudent().setResumeUrl(resumeUrl);
         userRepository.save(app.getStudent());
-        return applicationRepository.save(app);
+        return loadApplicationWithDetails(app.getId());
     }
 
     public long countByStudent(Long userId) {
         return applicationRepository.findByStudentId(userId).size();
+    }
+
+    private InternshipApplication loadApplicationWithDetails(Long applicationId) {
+        return applicationRepository.findByIdWithDetails(applicationId)
+                .orElseThrow(() -> new ResponseStatusException(NOT_FOUND, "Application not found"));
     }
 }
