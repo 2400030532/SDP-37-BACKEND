@@ -19,6 +19,11 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:${MYSQLUSER:root}}
     password: ${SPRING_DATASOURCE_PASSWORD:${MYSQLPASSWORD:}}
     driver-class-name: ${SPRING_DATASOURCE_DRIVER_CLASS_NAME:com.mysql.cj.jdbc.Driver}
+    hikari:
+      # Do not fail app startup immediately if DB is still booting on Railway.
+      initialization-fail-timeout: -1
+      connection-timeout: 30000
+      maximum-pool-size: ${DB_POOL_MAX_SIZE:10}
 
   # Security
   security:
@@ -39,6 +44,7 @@ spring:
             enable: true
 
 server:
+  address: 0.0.0.0
   port: ${PORT:8080}
   error:
     include-message: always
