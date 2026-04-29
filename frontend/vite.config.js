@@ -9,7 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // local backend
+        target: 'https://sdp-37-backend-1.onrender.com/api/v1',
         changeOrigin: true,
       },
     },
