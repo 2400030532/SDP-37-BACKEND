@@ -1,10 +1,35 @@
 services:
   - type: web
-    name: sdp-37-backend-1
+    name: sdp-37-backend
     runtime: docker
     plan: free
     autoDeployTrigger: commit
     healthCheckPath: /api/v1/status/health
+    dockerfilePath: ./Dockerfile
     envVars:
-      - key: APP_JWT_SECRET
-        generateValue: true
+      - key: PORT
+        value: 8080
+      - key: DATABASE_URL
+        fromDatabase:
+          name: easyintern-mysql
+          property: connectionString
+      - key: DATABASE_USER
+        fromDatabase:
+          name: easyintern-mysql
+          property: user
+      - key: DATABASE_PASSWORD
+        fromDatabase:
+          name: easyintern-mysql
+          property: password
+      - key: JPA_HIBERNATE_DDL_AUTO
+        value: validate
+      - key: JPA_SHOW_SQL
+        value: false
+
+databases:
+  - name: easyintern-mysql
+    engine: mysql
+    version: "8.0"
+    plan: free
+    databaseName: easyintern
+    user: easyintern
